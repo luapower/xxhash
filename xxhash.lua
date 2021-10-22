@@ -41,6 +41,23 @@ function M.hash32 (data, sz, seed) return C.XXH32 (data, sz or #data, seed or 0)
 function M.hash64 (data, sz, seed) return C.XXH64 (data, sz or #data, seed or 0) end
 function M.hash128(data, sz, seed) return C.XXH128(data, sz or #data, seed or 0) end
 
+local h = {}
+
+function h:bin()
+	return ffi.string(self, 16)
+end
+
+function h:hex()
+	local h = bit.tohex
+	return
+		h(self.u32[0])..
+		h(self.u32[1])..
+		h(self.u32[2])..
+		h(self.u32[3])
+end
+
+ffi.metatype('XXH128_hash_t', {__index = h})
+
 local st = {}
 local st_meta = {__index = st}
 
@@ -63,21 +80,6 @@ function st:digest()
 	return C.XXH3_128bits_digest(self)
 end
 
-function st:digest_bin()
-	local d = self:digest()
-	return ffi.string(d, ffi.sizeof(d))
-end
-
-function st:digest_hex()
-	local d = self:digest()
-	local h = bit.tohex
-	return
-		h(d.u32[0])..
-		h(d.u32[1])..
-		h(d.u32[2])..
-		h(d.u32[3])
-end
-
 function M.hash128_digest(seed)
 	local st = C.XXH3_createState()
 	assert(st ~= nil)
@@ -90,8 +92,8 @@ if not ... then
 	local st = M.hash128_digest()
 	st:update('abcd')
 	st:update('1324')
-	print(st:digest_bin())
-	print(st:digest_hex())
+	assert(st:digest():bin() == M.hash128('abcd1324'):bin())
+	assert(st:digest():hex() == M.hash128('abcd1324'):hex())
 end
 
 return M
