@@ -9,8 +9,6 @@ A ffi binding of the extremely fast non-cryptographic hash algorithm
 
 ## API
 
------------------------------------------------- ------------------------------------------------
-`xxhash.hash32(data[, len[, seed]]) -> hash`     compute a 32bit hash
-`xxhash.hash64(data[, len[, seed]]) -> hash`     compute a 64bit hash
------------------------------------------------- ------------------------------------------------
+### `xxhash.hash32|64|128(data[, len[, seed]]) -> hash`
 
+Compute a 32|64|128 bit hash.
